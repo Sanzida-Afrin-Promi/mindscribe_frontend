@@ -2,10 +2,10 @@ import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
 const SignIn: React.FC = () => {
-  const [identifier, setIdentifier] = useState(""); // ✅ Can be Email or Username
+  const [identifier, setIdentifier] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState(""); // ✅ State for error message
-  const navigate = useNavigate(); // ✅ Hook for redirection
+  const [error, setError] = useState("");
+  const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -20,10 +20,10 @@ const SignIn: React.FC = () => {
       const data = await response.json();
 
       if (response.ok) {
-        localStorage.setItem("token", data.token); // ✅ Store token for authentication
-        navigate("/home"); // ✅ Redirect to Dashboard or Home
+        localStorage.setItem("token", data.token);
+        navigate("/home");
       } else {
-        setError(data.message || "Invalid login credentials."); // ❌ Show error message
+        setError(data.message || "Invalid login credentials.");
       }
     } catch (error) {
       console.error("Login Error:", error);
@@ -32,15 +32,15 @@ const SignIn: React.FC = () => {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-black text-white">
-      <div className="w-full max-w-md p-6 border border-gray-600 rounded-lg shadow-lg bg-gray-900">
+    <div className="flex items-center justify-center min-h-screen bg-white text-black">
+      <div className="w-full max-w-md p-6 border border-gray-600 rounded-lg shadow-lg bg-gray-100">
         <h2 className="text-2xl font-semibold text-center">Sign In</h2>
 
-        {error && <p className="text-red-400 text-center">{error}</p>} {/* ✅ Show error message */}
+        {error && <p className="text-red-500 text-center">{error}</p>}
 
         <form className="mt-4" onSubmit={handleSubmit}>
           <div className="mb-4">
-            <label className="block text-gray-400 text-sm mb-1">
+            <label className="block text-gray-700 text-sm mb-1">
               Email or Username
             </label>
             <input
@@ -53,7 +53,7 @@ const SignIn: React.FC = () => {
           </div>
 
           <div className="mb-4">
-            <label className="block text-gray-400 text-sm mb-1">Password</label>
+            <label className="block text-gray-700 text-sm mb-1">Password</label>
             <input
               type="password"
               value={password}
@@ -65,16 +65,16 @@ const SignIn: React.FC = () => {
 
           <button
             type="submit"
-            className="w-full py-2 mt-2 text-white bg-gray-700 rounded-lg hover:bg-gray-600 transition duration-200"
+            className="w-full py-2 mt-2 text-white bg-black rounded-lg hover:bg-gray-800 transition duration-200"
           >
             Sign In
           </button>
         </form>
 
-        <p className="mt-4 text-center text-gray-400">
-          Don't have an account?{" "}
-          <Link to="/register" className="text-gray-300 hover:underline">
-            Register
+        <p className="mt-4 text-center text-gray-600">
+          Don't have an account? {" "}
+          <Link to="/register" className="text-gray-800 hover:underline">
+            Sign Up
           </Link>
         </p>
       </div>

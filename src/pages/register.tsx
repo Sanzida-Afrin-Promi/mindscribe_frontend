@@ -40,15 +40,15 @@ const Register: React.FC = () => {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-black text-white">
-      <div className="w-full max-w-md p-6 border border-gray-600 rounded-lg shadow-lg bg-gray-900">
-        <h2 className="text-2xl font-semibold text-center">Register</h2>
+    <div className="flex items-center justify-center min-h-screen bg-white text-black">
+      <div className="w-full max-w-md p-6 border border-gray-600 rounded-lg shadow-lg bg-gray-100">
+        <h2 className="text-2xl font-semibold text-center">Sign Up</h2>
 
-        {message && <p className="text-center text-green-400">{message}</p>} {/* ✅ Show success or error message */}
+        {message && <p className="text-center text-green-600">{message}</p>} {/* ✅ Show success or error message */}
 
         <form className="mt-4" onSubmit={handleSubmit}>
           <div className="mb-4">
-            <label className="block text-gray-400 text-sm mb-1">Username</label>
+            <label className="block text-gray-700 text-sm mb-1">Username</label>
             <input
               type="text"
               value={username}
@@ -59,7 +59,7 @@ const Register: React.FC = () => {
           </div>
 
           <div className="mb-4">
-            <label className="block text-gray-400 text-sm mb-1">Full Name</label>
+            <label className="block text-gray-700 text-sm mb-1">Full Name</label>
             <input
               type="text"
               value={name}
@@ -70,7 +70,7 @@ const Register: React.FC = () => {
           </div>
 
           <div className="mb-4">
-            <label className="block text-gray-400 text-sm mb-1">Email</label>
+            <label className="block text-gray-700 text-sm mb-1">Email</label>
             <input
               type="email"
               value={email}
@@ -81,7 +81,7 @@ const Register: React.FC = () => {
           </div>
 
           <div className="mb-4">
-            <label className="block text-gray-400 text-sm mb-1">Password</label>
+            <label className="block text-gray-700 text-sm mb-1">Password</label>
             <input
               type="password"
               value={password}
@@ -93,15 +93,15 @@ const Register: React.FC = () => {
 
           <button
             type="submit"
-            className="w-full py-2 mt-2 text-white bg-gray-700 rounded-lg hover:bg-gray-600 transition duration-200"
+            className="w-full py-2 mt-2 text-white bg-black rounded-lg hover:bg-gray-800 transition duration-200"
           >
-            Register
+            Sign Up
           </button>
         </form>
 
-        <p className="mt-4 text-center text-gray-400">
+        <p className="mt-4 text-center text-gray-600">
           Already have an account?{" "}
-          <Link to="/signIn" className="text-gray-300 hover:underline">
+          <Link to="/signIn" className="text-gray-800 hover:underline">
             Sign In
           </Link>
         </p>

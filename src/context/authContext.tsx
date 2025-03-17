@@ -44,10 +44,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }, []);
 
   // Logout functionz
-  const logout = () => {
+   const logout = () => {
     localStorage.removeItem("token");
     setUser(null);
-    navigate("/signin"); // ✅ Redirect using navigate
+    navigate("/signIn"); // ✅ Redirect using navigate
   };
 
   return (

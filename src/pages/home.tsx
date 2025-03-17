@@ -4,7 +4,7 @@ const Home: React.FC = () => {
   const [stories, setStories] = useState<{ title: string; author_name: string }[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalStories, setTotalStories] = useState(0); // Track total stories
-  const storiesPerPage = 10;
+  const storiesPerPage = 9;
   const [loading, setLoading] = useState(false);
 
   // Fetch paginated stories
@@ -12,8 +12,7 @@ const Home: React.FC = () => {
     setLoading(true);
     try {
       const token = localStorage.getItem("token");
-      console.log(token);
-
+     
       const response = await fetch(`http://localhost:3000/api/stories?page=${page}&limit=${storiesPerPage}`, {
         method: "GET",
         headers: {
@@ -27,7 +26,7 @@ const Home: React.FC = () => {
       }
 
       const data = await response.json();
-      console.log(data);
+     
 
       setStories(data.stories); // Correct API response handling
       setTotalStories(data.totalStories); // Set total count

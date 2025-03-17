@@ -1,3 +1,13 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.mde-fullscreen-control {
+    display: none !important;
+  }
+
+  .rmel-icon.rmel-icon-fullscreen {
+    display: none !important;
+  }
+  
+  

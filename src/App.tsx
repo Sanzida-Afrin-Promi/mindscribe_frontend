@@ -8,6 +8,8 @@ import Profile from "./pages/profile";
 import Navbar from "./components/Navbar";
 import WriteStory from "./pages/writeStory";
 import StoryView from "./components/StoryView";
+import "./index.css"; 
+
 
 const PrivateRoute = ({ children }: { children: JSX.Element }) => {
   return localStorage.getItem("token") ? children : <Navigate to="/signIn" />;
@@ -26,7 +28,7 @@ const MainLayout = () => {
         <Route path="/register" element={<Register />} />
         <Route path="/home" element={<PrivateRoute><Home /></PrivateRoute>} />
         <Route path="/profile" element={<PrivateRoute><Profile /></PrivateRoute>} />
-        <Route path ="/writeStory" element ={<PrivateRoute><WriteStory /></PrivateRoute>} />
+        <Route path ="/story/create" element ={<PrivateRoute><WriteStory /></PrivateRoute>} />
         <Route path = "/story/:id" element = {<PrivateRoute><StoryView /></PrivateRoute>}/>
       </Routes>
     </>

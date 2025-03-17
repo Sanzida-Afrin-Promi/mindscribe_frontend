@@ -29,7 +29,7 @@ const Profile = () => {
   useEffect(() => {
     if (!user) {
       setError("User not found. Please log in.");
-      navigate("/login");
+      navigate("/signIn");
       return;
     }
 
@@ -81,7 +81,7 @@ const Profile = () => {
           {/* Error Message */}
           {error && <div className="text-red-500 text-center mb-4">{error}</div>}
   
-          {/* Scrollable Stories */}
+         
           <div className="space-y-4 overflow-y-auto max-h-[400px] pr-2">
             {stories.length > 0 ? (
               stories.map((story) => <StoryCard key={story.id} story={story} />) 

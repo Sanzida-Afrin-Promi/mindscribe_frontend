@@ -14,6 +14,7 @@ interface User {
 
 interface AuthContextType {
   user: User | null;
+  login: (token: string) => void;
   logout: () => void;
 }
 
@@ -22,9 +23,8 @@ export const AuthContext = createContext<AuthContextType | undefined>(undefined)
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
-  const navigate = useNavigate(); // ✅ useNavigate is fine here since BrowserRouter is in main.tsx
+  const navigate = useNavigate();
 
-  // Load user from token
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (token) {
@@ -38,20 +38,37 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         });
       } catch (error) {
         console.error("Invalid token:", error);
-        logout(); // Remove invalid token
+        logout();
       }
     }
-  }, []);
+  }, []); // ✅ This runs only once, which is why login was not updating immediately
 
-  // Logout functionz
-   const logout = () => {
+  // ✅ New function to update user state after login
+  const login = (token: string) => {
+    localStorage.setItem("token", token);
+    try {
+      const decoded: any = jwtDecode(token);
+      setUser({
+        id: decoded.id,
+        username: decoded.username,
+        name: decoded.name,
+        role: decoded.role,
+      });
+      navigate("/home"); // ✅ Redirect after login
+    } catch (error) {
+      console.error("Invalid token:", error);
+      logout();
+    }
+  };
+
+  const logout = () => {
     localStorage.removeItem("token");
     setUser(null);
-    navigate("/signIn"); // ✅ Redirect using navigate
+    navigate("/signIn");
   };
 
   return (
-    <AuthContext.Provider value={{ user, logout }}>
+    <AuthContext.Provider value={{ user, login, logout }}>
       {children}
     </AuthContext.Provider>
   );

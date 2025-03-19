@@ -1,10 +1,14 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { FaUserCircle, FaChevronDown, FaSignOutAlt, FaHome, FaRegEdit } from "react-icons/fa"; // New write icon (FaRegEdit)
+import { FaUserCircle, FaChevronDown, FaSignOutAlt, FaHome, FaRegEdit } from "react-icons/fa";
+import { useAuth } from "../context/authContext"; // New write icon (FaRegEdit)
 
 const Navbar = () => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const navigate = useNavigate();
+  const { user, logout } = useAuth();
+
 
   const toggleDropdown = () => {
     setDropdownOpen(!dropdownOpen);
@@ -13,13 +17,10 @@ const Navbar = () => {
   const closeDropdown = () => {
     setDropdownOpen(false);
   };
-
   const handleLogout = () => {
-    // Clear session
-    localStorage.removeItem("token");
-    // Redirect to SignIn page
-    navigate("/signIn");
+    logout(); // ✅ This now properly updates AuthContext
     closeDropdown();
+    navigate("/signIn");
   };
 
   return (
@@ -40,9 +41,11 @@ const Navbar = () => {
         </Link>
 
         {/* Profile Icon */}
-        <Link to="/profile" className="flex items-center hover:text-gray-300">
+        {user && (
+          <Link to={`/profile/${user.username}`} className="flex items-center hover:text-gray-300">
           <FaUserCircle className="text-3xl" />
-        </Link>
+          </Link>
+        )}
 
         {/* Dropdown for Logout */}
         <div className="relative">

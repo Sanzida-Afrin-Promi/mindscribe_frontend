@@ -12,6 +12,7 @@
   "dependencies": {
     "@tanstack/react-query": "^5.67.2",
     "easymde": "^2.20.0",
+    "framer-motion": "^12.5.0",
     "jwt-decode": "^4.0.0",
     "markdown-it": "^14.1.0",
     "marked": "^15.0.7",

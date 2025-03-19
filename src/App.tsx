@@ -8,7 +8,9 @@ import Profile from "./pages/profile";
 import Navbar from "./components/Navbar";
 import WriteStory from "./pages/writeStory";
 import StoryView from "./components/StoryView";
+import StoryEdit from "./components/StoryEdit";
 import "./index.css"; 
+import ProfileUpdate from "./components/ProfileUpdate";
 
 
 const PrivateRoute = ({ children }: { children: JSX.Element }) => {
@@ -27,9 +29,11 @@ const MainLayout = () => {
         <Route path="/signIn" element={<SignIn />} />
         <Route path="/register" element={<Register />} />
         <Route path="/home" element={<PrivateRoute><Home /></PrivateRoute>} />
-        <Route path="/profile" element={<PrivateRoute><Profile /></PrivateRoute>} />
+        <Route path="/profile/:username" element={<PrivateRoute><Profile /></PrivateRoute>} />
         <Route path ="/story/create" element ={<PrivateRoute><WriteStory /></PrivateRoute>} />
         <Route path = "/story/:id" element = {<PrivateRoute><StoryView /></PrivateRoute>}/>
+        <Route path = "/edit-story/:id" element = {<PrivateRoute><StoryEdit /></PrivateRoute>}/>
+        <Route path = "/profile/:id/update" element = {<PrivateRoute><ProfileUpdate /></PrivateRoute>}/>
       </Routes>
     </>
   );

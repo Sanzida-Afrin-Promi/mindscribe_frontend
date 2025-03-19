@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
+import StoryCard from "../components/StoryCard"; // Import the StoryCard component
 
 const Home: React.FC = () => {
-  const [stories, setStories] = useState<{ title: string; author_name: string }[]>([]);
+  const [stories, setStories] = useState<{ id: number; title: string; author_username: string; date: string; description: string }[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalStories, setTotalStories] = useState(0); // Track total stories
   const storiesPerPage = 9;
@@ -26,8 +27,6 @@ const Home: React.FC = () => {
       }
 
       const data = await response.json();
-     
-
       setStories(data.stories); // Correct API response handling
       setTotalStories(data.totalStories); // Set total count
 
@@ -56,11 +55,8 @@ const Home: React.FC = () => {
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {stories.length > 0 ? (
-              stories.map((story, index) => (
-                <div key={index} className="bg-gray-100 shadow-lg rounded-lg p-4 hover:shadow-2xl transition">
-                  <h3 className="text-xl font-semibold text-gray-800">{story.title}</h3>
-                  <p className="text-gray-600">by {story.author_name}</p>
-                </div>
+              stories.map((story) => (
+                <StoryCard key={story.id} story={story} /> // Using StoryCard component
               ))
             ) : (
               <p className="text-gray-500">No stories available</p>

@@ -3,6 +3,7 @@ import MarkdownIt from "markdown-it"; // Import MarkdownIt for parsing markdown
 
 interface MarkdownRendererProps {
   markdownContent: string;
+  content : string;
 }
 
 const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ markdownContent }) => {

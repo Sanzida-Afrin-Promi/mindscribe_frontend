@@ -1,14 +1,15 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import React, { useEffect, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
-import { useAuth } from "../context/authContext";
+import { useNavigate, useParams } from "react-router-dom";
+import SuccessPopup from "../components/SuccessPopUp";
 import WriteTextEditor from "../components/WriteTextEditor";
-import SuccessPopup from "../components/SuccessPopUp"; 
+import { useAuth } from "../context/authContext";
 
 interface Story {
   id: string;
   title: string;
   description: string;
+  author_username: string;
 }
 
 const StoryEdit = () => {
@@ -17,7 +18,7 @@ const StoryEdit = () => {
   const [title, setTitle] = useState<string>("");
   const [description, setDescription] = useState<string>("");
   const [error, setError] = useState<string>("");
-  const [showSuccess, setShowSuccess] = useState(false); // ✅ State for success popup
+  const [showSuccess, setShowSuccess] = useState(false);
   const navigate = useNavigate();
   const { user } = useAuth();
   const token = localStorage.getItem("token");
@@ -30,7 +31,7 @@ const StoryEdit = () => {
           return;
         }
 
-        const response = await fetch(`http://localhost:3000/api/stories/${id}`, {
+        const response = await fetch(`http://localhost:3000/api/story/${id}`, {
           method: "GET",
           headers: {
             Authorization: `Bearer ${token}`,
@@ -41,16 +42,22 @@ const StoryEdit = () => {
         if (!response.ok) throw new Error("Failed to fetch story.");
         const data = await response.json();
 
+        if (user?.username !== data.author_username && Number(user?.role) !== 1) {
+          setError("You are not authorized to edit this story.");
+          navigate("/unauthorized");
+          return;
+        }
+
         setStory(data);
-        setTitle(data.title); // Pre-fill title
-        setDescription(data.description); // Pre-fill description
-      } catch (err: unknown) {
+        setTitle(data.title);
+        setDescription(data.description);
+      } catch (err) {
         setError(err instanceof Error ? err.message : "An unknown error occurred.");
       }
     };
 
     fetchStory();
-  }, [id, token]);
+  }, [id, token, user?.username]);
 
   const handleUpdate = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -59,9 +66,14 @@ const StoryEdit = () => {
       setError("Title and description cannot be empty.");
       return;
     }
+    if (user?.username !== story?.author_username && Number(user?.role) !== 1) {
+      setError("You are not authorized to edit this story.");
+      navigate("/unauthorized");
+      return;
+    }
 
     try {
-      const response = await fetch(`http://localhost:3000/api/stories/${id}`, {
+      const response = await fetch(`http://localhost:3000/api/story/${id}`, {
         method: "PUT",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -72,11 +84,10 @@ const StoryEdit = () => {
 
       if (!response.ok) throw new Error("Failed to update story.");
 
-      setShowSuccess(true); // ✅ Show success popup
-
+      setShowSuccess(true);
       setTimeout(() => {
         navigate(`/story/${id}`);
-      }, 2500); // ✅ Redirect after 2.5s
+      }, 2500);
     } catch (err) {
       setError("Error updating story. Please try again.");
     }
@@ -86,44 +97,29 @@ const StoryEdit = () => {
   if (!story) return <p className="text-gray-500">Loading story...</p>;
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center py-8 relative">
-      {/* ✅ Background blur when popup is visible */}
-      <div className={`absolute inset-0 bg-gray-100 ${showSuccess ? "blur-sm" : ""}`}></div>
+    <div className="min-h-screen flex flex-col items-center py-8 bg-gray-100">
+      {showSuccess && <SuccessPopup message="Story updated successfully!" onClose={() => setShowSuccess(false)} />}
 
-      {/* ✅ Success Popup Component */}
-      {showSuccess && (
-        <SuccessPopup message="Story updated successfully!" onClose={() => setShowSuccess(false)} />
-      )}
+      <div className="bg-white shadow-md rounded-lg p-6 w-full max-w-6xl">
+        <h1 className="text-3xl font-bold mb-4">Edit Story</h1>
 
-      {/* Main Content (Form) */}
-      <div className={`relative z-10 ${showSuccess ? "pointer-events-none" : ""}`}>
-        <h1 className="text-3xl font-bold mb-6">Edit Story</h1>
+        <form onSubmit={handleUpdate} className="w-full flex flex-col gap-6">
+          <input
+            type="text"
+            id="title"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            className="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-xl"
+            placeholder="Story Title"
+            required
+          />
 
-        <form onSubmit={handleUpdate} className="bg-white p-6 rounded shadow-md w-full max-w-4xl">
-          {/* Title Input */}
-          <div className="mb-6">
-            <label htmlFor="title" className="block text-xl font-medium mb-2">
-              Title
-            </label>
-            <input
-              type="text"
-              id="title"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              className="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-              required
-            />
+          <div className="h-[450px] w-full">
+            <WriteTextEditor value={description} onChange={setDescription} />
           </div>
 
-          {/* Markdown Editor for Description */}
-          <WriteTextEditor value={description} onChange={setDescription} />
-
-          {/* Submit Button */}
-          <div className="flex justify-center">
-            <button
-              type="submit"
-              className="px-6 py-2 bg-blue-600 text-white font-semibold rounded hover:bg-blue-700"
-            >
+          <div className="flex justify-end">
+            <button type="submit" className="px-6 py-2 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700">
               Update Story
             </button>
           </div>

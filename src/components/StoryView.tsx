@@ -34,7 +34,7 @@ const StoryView = () => {
         }
 
         const response = await fetch(
-          `http://localhost:3000/api/stories/${id}`,
+          `http://localhost:3000/api/story/${id}`,
           {
             method: "GET",
             headers: {
@@ -57,14 +57,14 @@ const StoryView = () => {
     fetchStory();
   }, [id, token]);
 
-  const handleEdit = () => story && navigate(`/edit-story/${story.id}`);
+  const handleEdit = () => story && navigate(`/story/edit/${story.id}`);
 
   const handleDeleteConfirm = async () => {
     if (!story || !token) return;
 
     try {
       const response = await fetch(
-        `http://localhost:3000/api/stories/${story.id}`,
+        `http://localhost:3000/api/story/${story.id}`,
         {
           method: "DELETE",
           headers: {
@@ -96,14 +96,11 @@ const StoryView = () => {
   if (!story) return <p className="text-gray-500">Loading story...</p>;
 
   return (
-    <div className="max-w-3xl mx-auto py-8 px-4">
-      {/* Header Section */}
-      <div className="flex justify-between items-center mb-4">
-        <h1 className="text-3xl font-bold break-words max-w-full">
-          {story.title}
-        </h1>
-        {user?.username === story.author_username && (
-          <div className="flex space-x-3">
+    <div className="min-h-screen flex justify-center items-center bg-gray-100 py-8">
+      <div className="bg-white shadow-lg rounded-lg p-6 w-full max-w-4xl relative">
+        {/* Edit and Delete Buttons */}
+        {(user?.username === story.author_username || Number(user?.role) === 1) && (
+          <div className="absolute top-4 right-4 flex space-x-3">
             <button
               onClick={handleEdit}
               className="text-blue-500 hover:text-blue-700 text-xl"
@@ -118,56 +115,65 @@ const StoryView = () => {
             </button>
           </div>
         )}
-      </div>
 
-      {/* Story Author & Date Section */}
-      <div className="flex flex-col items-start mb-4">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-gray-400 rounded-full"></div>
-          <Link
-            to={`/profile/${story.author_username}`}
-            className="text-blue-600 hover:underline font-medium"
-          >
-            @{story.author_username}
-          </Link>
+        {/* Header Section */}
+        <div className="mb-6">
+          <h1 className="text-3xl font-bold break-words max-w-full">
+            {story.title}
+          </h1>
         </div>
-        <p className="text-sm text-gray-500 mt-1">
-          {new Date(story.date).toLocaleDateString("en-US", {
-            year: "numeric",
-            month: "long",
-            day: "numeric",
-          })}
-        </p>
+
+        {/* Story Author & Date Section */}
+        <div className="flex items-center gap-4 mb-6">
+          <div className="w-12 h-12 bg-gray-400 rounded-full"></div>
+          <div>
+            <Link
+              to={`/profile/${story.author_username}`}
+              className="text-blue-600 hover:underline font-medium"
+            >
+              @{story.author_username}
+            </Link>
+            <p className="text-sm text-gray-500">
+              {new Date(story.date).toLocaleDateString("en-US", {
+                year: "numeric",
+                month: "long",
+                day: "numeric",
+              })}
+            </p>
+          </div>
+        </div>
+
+        {/* Story Image */}
+        {story.imageUrl && (
+          <img
+            src={story.imageUrl}
+            alt={story.title}
+            className="w-full rounded-lg mb-6 shadow-md"
+          />
+        )}
+
+        {/* Story Content */}
+        <div className="prose max-w-none">
+          <MarkdownRenderer markdownContent={story.description} content={""} />
+        </div>
+
+        {/* Delete Confirmation Popup */}
+        {showDeletePopup && (
+          <DeletePopup
+            message="Are you sure you want to delete this story?"
+            onClose={handleDeleteCancel}
+            onConfirm={handleDeleteConfirm}
+          />
+        )}
+
+        {/* Success Popup */}
+        {showSuccessPopup && (
+          <SuccessPopup
+            message="Your story has been deleted successfully!"
+            onClose={() => navigate(`/profile/${user?.username}`)} // Redirect to user's profile after success
+          />
+        )}
       </div>
-
-      {/* Story Image */}
-      {story.imageUrl && (
-        <img
-          src={story.imageUrl}
-          alt={story.title}
-          className="w-full rounded-lg mb-4 shadow-md"
-        />
-      )}
-
-      {/* Story Content */}
-      <MarkdownRenderer markdownContent={story.description} />
-
-      {/* Delete Confirmation Popup */}
-      {showDeletePopup && (
-        <DeletePopup
-          message="Are you sure you want to delete this story?"
-          onClose={handleDeleteCancel}
-          onConfirm={handleDeleteConfirm}
-        />
-      )}
-
-      {/* Success Popup */}
-      {showSuccessPopup && (
-        <SuccessPopup
-          message="Your story has been deleted successfully!"
-          onClose={() => navigate(`/profile/${user?.username}`)} // Redirect to user's profile after success
-        />
-      )}
     </div>
   );
 };

@@ -1,20 +1,29 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import React from "react";
 import { useNavigate } from "react-router-dom";
+import ChangePassword from "../components/ChangePassword"; // Import the ChangePassword component
 
 interface ProfileData {
   name: string;
   username: string;
-  role: string;
+  role: number;
   joinDate: string;
   id: string;
   email: string;
 }
 
-const ProfileCard: React.FC<{ profile: ProfileData | null; isOwnProfile: boolean; onUpdate: () => void }> = ({
+const ProfileCard: React.FC<{
+  profile: ProfileData | null;
+  isOwnProfile: boolean;
+  isAdmin: boolean;
+  onUpdate: () => void;
+  onChangePassword: () => void;
+}> = ({
   profile,
   isOwnProfile,
+  isAdmin,
   onUpdate,
+  onChangePassword, // New prop for triggering the password change modal
 }) => {
   const navigate = useNavigate();
 
@@ -44,7 +53,7 @@ const ProfileCard: React.FC<{ profile: ProfileData | null; isOwnProfile: boolean
               </tr>
               <tr className="border-b">
                 <td className="p-2 font-semibold">Role:</td>
-                <td className="p-2">{profile.role === "1" ? "Admin" : "User"}</td>
+                <td className="p-2">{profile.role === 1 ? "Admin" : "User"}</td>
               </tr>
               <tr>
                 <td className="p-2 font-semibold">Joined:</td>
@@ -54,15 +63,22 @@ const ProfileCard: React.FC<{ profile: ProfileData | null; isOwnProfile: boolean
           </table>
 
           {/* Show options only if it's the logged-in user's profile */}
-          {isOwnProfile && (
+          {(isAdmin || isOwnProfile) && (
             <div className="mt-4 flex flex-col space-y-2">
               <button
-                onClick={onUpdate} // Trigger the update modal here
+                onClick={onUpdate} 
                 className="bg-green-500 text-white px-4 py-2 rounded w-full"
               >
                 Update Profile
               </button>
-              <button className="bg-blue-500 text-white px-4 py-2 rounded w-full">Change Password</button>
+              {isOwnProfile && (
+                <button
+                  onClick={onChangePassword}
+                  className="bg-blue-500 text-white px-4 py-2 rounded w-full"
+                >
+                  Change Password
+                </button>
+              )}
             </div>
           )}
         </div>

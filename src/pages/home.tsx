@@ -14,7 +14,7 @@ const Home: React.FC = () => {
     try {
       const token = localStorage.getItem("token");
      
-      const response = await fetch(`http://localhost:3000/api/stories?page=${page}&limit=${storiesPerPage}`, {
+      const response = await fetch(`http://localhost:3000/api/story?page=${page}&limit=${storiesPerPage}`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",

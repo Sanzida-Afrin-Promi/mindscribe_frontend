@@ -1,11 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { createContext, useContext, useEffect, useState } from "react";
 import { jwtDecode } from "jwt-decode"; // Install: npm install jwt-decode
+import { createContext, useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 // Define User Data Type
 interface User {
-  [x: string]: any;
   id: string;
   username: string;
   name: string;
@@ -19,12 +18,38 @@ interface AuthContextType {
 }
 
 // Create Context
-export const AuthContext = createContext<AuthContextType | undefined>(undefined);
+export const AuthContext = createContext<AuthContextType | undefined>(
+  undefined
+);
 
-export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [user, setUser] = useState<User | null>(null);
+export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
+  children,
+}) => {
   const navigate = useNavigate();
 
+  // ✅ Fix: Initialize `user` state directly from localStorage
+  const getUserFromLocalStorage = () => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      try {
+        const decoded: any = jwtDecode(token);
+        return {
+          id: decoded.id,
+          username: decoded.username,
+          name: decoded.name,
+          role: decoded.role,
+        };
+      } catch (error) {
+        console.error("Invalid token:", error);
+        return null;
+      }
+    }
+    return null;
+  };
+
+  const [user, setUser] = useState<User | null>(getUserFromLocalStorage);
+
+  // ✅ Fix: Update `user` state when token changes
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (token) {
@@ -41,28 +66,32 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         logout();
       }
     }
-  }, []); // ✅ This runs only once, which is why login was not updating immediately
+  }, []);
 
-  // ✅ New function to update user state after login
+  // ✅ Function to handle login
   const login = (token: string) => {
     localStorage.setItem("token", token);
     try {
       const decoded: any = jwtDecode(token);
-      setUser({
+      const userData = {
         id: decoded.id,
         username: decoded.username,
         name: decoded.name,
         role: decoded.role,
-      });
-      navigate("/home"); // ✅ Redirect after login
+      };
+      setUser(userData);
+      localStorage.setItem("user", JSON.stringify(userData));
+      navigate("/home");
     } catch (error) {
       console.error("Invalid token:", error);
       logout();
     }
   };
 
+  // ✅ Function to handle logout
   const logout = () => {
     localStorage.removeItem("token");
+    localStorage.removeItem("user");
     setUser(null);
     navigate("/signIn");
   };

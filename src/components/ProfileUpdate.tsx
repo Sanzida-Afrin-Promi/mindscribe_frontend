@@ -21,7 +21,7 @@ const ProfileUpdate: React.FC<{ profile: any; onClose: (updatedProfile: any) => 
       const token = localStorage.getItem("token");
       if (!token) throw new Error("No token found.");
 
-      const response = await fetch(`http://localhost:3000/api/users/${profile.id}`, {
+      const response = await fetch(`http://localhost:3000/api/user/${profile.id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",

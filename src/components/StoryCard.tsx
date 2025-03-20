@@ -17,48 +17,51 @@ const StoryCard: React.FC<{ story: Story }> = ({ story }) => {
 
   // Initialize MarkdownIt to parse the markdown content
   const mdParser = new MarkdownIt();
-  const parsedDescription = mdParser.render(story.description); // Parse the markdown to HTML
+  const parsedDescription = mdParser.render(story.description); // Parse markdown to HTML
 
   const handleClick = () => {
     navigate(`/story/${story.id}`); // Navigate to the story page
   };
 
-  // Function to handle the click on the username and prevent the story view navigation
   const handleUsernameClick = (e: React.MouseEvent) => {
-    e.stopPropagation(); // Prevent the click from bubbling up to the story card's onClick
+    e.stopPropagation();
   };
 
-  // CSS Style for truncating to two lines with ellipsis
   const descriptionStyle: React.CSSProperties = {
     display: "-webkit-box",
     WebkitLineClamp: 2, // Limit to two lines
     WebkitBoxOrient: "vertical" as any,
     overflow: "hidden",
+    minHeight: "3rem", // Ensures consistent height even if there's only one line
   };
 
-  // Extract only the date part (YYYY-MM-DD)
-  const formattedDate = story.date.split("T")[0]; // Removing time if in ISO format
-
+  const formattedDate = new Date(story.date).toLocaleDateString("en-US", {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+  });
   return (
     <div
       onClick={handleClick}
-      className="p-6 bg-gray-100 rounded-lg shadow-sm w-full max-w-lg cursor-pointer"
+      className="p-6 bg-gray-100 rounded-lg shadow-sm w-full max-w-2xl cursor-pointer" // Increased max width
     >
-      {/* Title of the Story */}
-      <h3 className="text-xl font-semibold break-words whitespace-normal mb-2">
+      {/* Title of the Story (Truncated to a single line) */}
+      <h3
+        className="text-xl font-semibold break-words mb-2 overflow-hidden text-ellipsis whitespace-nowrap"
+      >
         {story.title}
       </h3>
 
-      {/* Description: Rendered from Markdown with Truncation */}
+    
       <div
         className="text-gray-700 mb-3"
-        style={descriptionStyle} // Apply truncation CSS
-        dangerouslySetInnerHTML={{ __html: parsedDescription }} // Render the parsed HTML content
+        style={descriptionStyle} 
+        dangerouslySetInnerHTML={{ __html: parsedDescription }} 
       />
 
-      {/* Author username and date layout (Now placed at the bottom) */}
+      {/* Author username and date layout */}
       <div className="flex justify-between items-center text-gray-600 mt-2">
-        {/* User Icon and Author Name on the left */}
+        {/* User Icon and Author Name */}
         <div className="flex items-center space-x-2">
           <FaUserCircle className="text-lg" />
           <Link
@@ -70,7 +73,7 @@ const StoryCard: React.FC<{ story: Story }> = ({ story }) => {
           </Link>
         </div>
 
-        {/* Date on the right */}
+        {/* Date */}
         <span className="text-sm text-gray-500">{formattedDate}</span>
       </div>
     </div>

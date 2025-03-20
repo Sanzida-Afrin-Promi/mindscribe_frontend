@@ -40,7 +40,7 @@ const WriteStory = () => {
     }
 
     try {
-      const response = await fetch("http://localhost:3000/api/stories", {
+      const response = await fetch("http://localhost:3000/api/story", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -57,7 +57,7 @@ const WriteStory = () => {
       setStoryId(data.id); // Store the story ID for redirection
       setShowSuccess(true); // Show success popup
 
-      // Redirect to StoryView after 4.5 seconds
+      // Redirect to StoryView after 2.5 seconds
       setTimeout(() => {
         navigate(`/story/${data.id}`);
       }, 2500);
@@ -69,18 +69,18 @@ const WriteStory = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center py-8 relative">
-      {/* Background blur only when success popup is visible */}
+    <div className="min-h-screen flex flex-col items-center justify-center py-12 relative">
+      {/* Background blur when success popup is visible */}
       <div className={`absolute inset-0 bg-gray-100 ${showSuccess ? "blur-sm" : ""}`}></div>
 
       {/* Main Content (Form) */}
-      <div className={`relative z-10 ${showSuccess ? "pointer-events-none" : ""}`}>
-        <h1 className="text-4xl font-semibold mb-8">Write Your Story</h1>
+      <div className={`relative z-10 w-full max-w-5xl px-6 ${showSuccess ? "pointer-events-none" : ""}`}>
+        <h1 className="text-5xl font-bold mb-10 text-center">Write Your Story</h1>
 
-        <form onSubmit={handleSubmit} className="bg-white p-6 rounded shadow-md w-full max-w-4xl">
+        <form onSubmit={handleSubmit} className="bg-white p-8 rounded-lg shadow-lg w-full">
           {/* Story Title */}
-          <div className="mb-4">
-            <label htmlFor="title" className="block text-xl font-medium mb-2">
+          <div className="mb-6">
+            <label htmlFor="title" className="block text-2xl font-medium mb-3">
               Story Title
             </label>
             <input
@@ -88,23 +88,25 @@ const WriteStory = () => {
               type="text"
               value={title}
               onChange={handleTitleChange}
-              className="w-full p-3 border border-gray-300 rounded"
+              className="w-full p-4 border border-gray-300 rounded-lg text-lg"
               placeholder="Enter your story title"
               required
             />
           </div>
 
-          {/* Text Editor */}
-          <WriteTextEditor value={description} onChange={handleDescriptionChange} />
+          {/* Text Editor - Enlarged */}
+          <div className="mb-2">
+            <WriteTextEditor value={description} onChange={handleDescriptionChange} />
+          </div>
 
           {/* Error Message */}
-          {error && <div className="text-red-500 text-center mb-4">{error}</div>}
+          {error && <div className="text-red-500 text-center text-lg">{error}</div>}
 
           {/* Submit Button */}
           <div className="flex justify-center">
             <button
               type="submit"
-              className={`px-6 py-2 bg-blue-600 text-white font-semibold rounded hover:bg-blue-700 ${
+              className={`px-8 py-3 text-xl bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition ${
                 loading ? "opacity-50 cursor-not-allowed" : ""
               }`}
               disabled={loading}
@@ -119,7 +121,7 @@ const WriteStory = () => {
       {showSuccess && (
         <SuccessPopup
           message="Your story has been created successfully!"
-          onClose={() => setShowSuccess(false)} // Close success popup
+          onClose={() => setShowSuccess(false)}
         />
       )}
     </div>

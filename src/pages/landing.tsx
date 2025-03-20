@@ -12,7 +12,7 @@ const Landing: React.FC = () => {
             Sign In
           </Link>
           <Link to="/Register" className="px-4 py-2 border rounded-lg hover:bg-gray-200 dark:hover:bg-gray-800">
-            Register
+           Sign Up
           </Link>
         </div>
       </nav>

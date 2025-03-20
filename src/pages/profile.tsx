@@ -1,15 +1,16 @@
-import React, { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { useAuth } from "../context/authContext";
+import ChangePassword from "../components/ChangePassword"; // Import the ChangePassword component
 import ProfileCard from "../components/ProfileCard";
-import StoryCard from "../components/StoryCard";
 import ProfileUpdate from "../components/ProfileUpdate";
+import StoryCard from "../components/StoryCard";
+import { useAuth } from "../context/authContext";
 
 interface ProfileData {
   id: string;
   name: string;
   username: string;
-  role: string;
+  role: number;
   joinDate: string;
   email: string;
 }
@@ -27,32 +28,42 @@ const Profile = () => {
   const [stories, setStories] = useState<Story[]>([]);
   const [error, setError] = useState<string>("");
   const [showUpdate, setShowUpdate] = useState<boolean>(false); // Added state for showing update modal
+  const [showChangePassword, setShowChangePassword] = useState<boolean>(false); // State for showing the change password modal
 
   const navigate = useNavigate();
   const { user } = useAuth();
   const { username } = useParams<{ username: string }>();
 
   const isOwnProfile = username === user?.username;
+  const isAdmin = Number(user?.role) === 1;
 
   useEffect(() => {
     const targetUsername = username || user?.username || "";
-    
+
+    console.log(user);
+
     const fetchProfileData = async () => {
       try {
         const token = localStorage.getItem("token");
         if (!token) throw new Error("No token found.");
 
-        const profileResponse = await fetch(`http://localhost:3000/api/users/username/${targetUsername}`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+        const profileResponse = await fetch(
+          `http://localhost:3000/api/user/username/${targetUsername}`,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
 
         if (!profileResponse.ok) throw new Error("Failed to fetch profile.");
         const profileData = await profileResponse.json();
         setProfile(profileData);
 
-        const storiesResponse = await fetch(`http://localhost:3000/api/stories/author/${targetUsername}`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+        const storiesResponse = await fetch(
+          `http://localhost:3000/api/story/author/${targetUsername}`,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
 
         if (storiesResponse.status === 404) return;
         if (!storiesResponse.ok) throw new Error("Failed to fetch stories.");
@@ -75,19 +86,33 @@ const Profile = () => {
     setShowUpdate(false); // Close the update modal after updating the profile
   };
 
+  const handleChangePassword = () => {
+    setShowChangePassword(true); // Show the change password modal
+  };
+
   return (
     <div className="min-h-screen bg-gray-100 flex justify-center py-8 relative">
       <div className="w-full max-w-6xl mt-12 mb-16 flex space-x-8">
         {/* Profile Card */}
-        <ProfileCard profile={profile} isOwnProfile={isOwnProfile} onUpdate={() => setShowUpdate(true)} />
+        <ProfileCard
+          profile={profile}
+          isOwnProfile={isOwnProfile}
+          isAdmin={isAdmin}
+          onUpdate={() => setShowUpdate(true)} // Trigger the update modal here
+          onChangePassword={handleChangePassword} // Pass the handler for change password
+        />
 
         {/* Stories Section */}
-        <div className="w-2/3 bg-white p-6 rounded-lg shadow-lg flex flex-col">
-          <h2 className="text-2xl font-semibold mb-4">Stories by {profile?.name || "User"}</h2>
+        <div className="w-2/3 bg-white p-3 rounded-lg shadow-lg flex flex-col">
+          <h2 className="text-2xl font-semibold mb-4">
+            Stories by {profile?.name || "User"}
+          </h2>
 
-          {error && <div className="text-red-500 text-center mb-4">{error}</div>}
+          {error && (
+            <div className="text-red-500 text-center mb-4">{error}</div>
+          )}
 
-          <div className="space-y-4 overflow-y-auto max-h-[400px] pr-2">
+          <div className="space-y-4 overflow-y-auto max-h-[600px] ml-2">
             {stories.length > 0 ? (
               stories.map((story) => <StoryCard key={story.id} story={story} />)
             ) : (
@@ -102,6 +127,18 @@ const Profile = () => {
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
           <div className="bg-white p-6 rounded-lg w-1/3">
             <ProfileUpdate profile={profile} onClose={handleProfileUpdate} />
+          </div>
+        </div>
+      )}
+
+      {/* Change Password Modal */}
+      {showChangePassword && profile && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+          <div className="bg-white p-6 rounded-lg w-1/3">
+            <ChangePassword
+              onClose={() => setShowChangePassword(false)}
+              userId={profile.id}
+            />
           </div>
         </div>
       )}

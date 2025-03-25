@@ -1,10 +1,14 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { useEffect, useState } from "react";
 import { FaEdit, FaTrashAlt } from "react-icons/fa";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import MarkdownRenderer from "../components/MarkDownRenderer";
-import SuccessPopup from "../components/SuccessPopUp"; // Import the SuccessPopup component
+import SuccessPopup from "../components/SuccessPopUp";
 import { useAuth } from "../context/authContext";
-import DeletePopup from "./ConfirmationPopUp"; // Import the DeletePopup component
+import DeletePopup from "./ConfirmationPopUp";
+import MarkdownIt from "markdown-it";
+import ReactMarkdownEditor from "react-markdown-editor-lite";
+import "react-markdown-editor-lite/lib/index.css";
 
 interface Story {
   id: string;
@@ -12,15 +16,15 @@ interface Story {
   author_username: string;
   imageUrl: string;
   description: string;
-  date: string; // Assuming the API provides this
+  date: string;
 }
 
 const StoryView = () => {
   const { id } = useParams<{ id: string }>();
   const [story, setStory] = useState<Story | null>(null);
   const [error, setError] = useState<string>("");
-  const [showDeletePopup, setShowDeletePopup] = useState(false); // State to show delete popup
-  const [showSuccessPopup, setShowSuccessPopup] = useState(false); // State to show success popup
+  const [showDeletePopup, setShowDeletePopup] = useState(false);
+  const [showSuccessPopup, setShowSuccessPopup] = useState(false);
   const navigate = useNavigate();
   const { user } = useAuth();
   const token = localStorage.getItem("token");
@@ -43,6 +47,11 @@ const StoryView = () => {
             },
           }
         );
+        if (response.status === 404) {
+       
+          navigate("/not-found");
+          return;
+        }
 
         if (!response.ok) throw new Error("Failed to fetch story.");
         const data = await response.json();
@@ -61,6 +70,12 @@ const StoryView = () => {
 
   const handleDeleteConfirm = async () => {
     if (!story || !token) return;
+    
+    if (user?.username !== story?.author_username && Number(user?.role) !== 1) {
+      setError("You are not authorized to edit this story.");
+      navigate("/unauthorized");
+      return;
+    }
 
     try {
       const response = await fetch(
@@ -76,29 +91,35 @@ const StoryView = () => {
 
       if (!response.ok) throw new Error("Failed to delete story.");
 
-      setShowDeletePopup(false); // Close the delete popup
-      setShowSuccessPopup(true); // Show success popup
+      setShowDeletePopup(false);
+      setShowSuccessPopup(true);
       setTimeout(() => {
-        navigate(`/profile/${user?.username}`); // Redirect to the user's profile after success
+        navigate(`/profile/${user?.username}`);
       }, 2500);
     } catch (err) {
-      console.error("Error deleting story:", err);
       alert("Error deleting story. Please try again.");
     }
   };
 
   const handleDeleteCancel = () => {
-    setShowDeletePopup(false); // Close the delete confirmation popup
-    navigate(`/story/${story?.id}`); // Go back to the story view
+    setShowDeletePopup(false);
+    navigate(`/story/${story?.id}`);
   };
 
   if (error) return <p className="text-red-500">{error}</p>;
   if (!story) return <p className="text-gray-500">Loading story...</p>;
 
+  const mdParser = new MarkdownIt();
+
+
+  const renderMarkdown = (text: string) => {
+    return mdParser.render(text);
+  };
+
+
   return (
-    <div className="min-h-screen flex justify-center items-center bg-gray-100 py-8">
-      <div className="bg-white shadow-lg rounded-lg p-6 w-full max-w-4xl relative">
-        {/* Edit and Delete Buttons */}
+    <div className="min-h-screen flex justify-center items-center bg-gray-100 py-8 overflow-hidden">
+      <div className="bg-white shadow-lg rounded-lg p-6 w-full max-w-6xl h-[80vh] overflow-y-auto relative">
         {(user?.username === story.author_username || Number(user?.role) === 1) && (
           <div className="absolute top-4 right-4 flex space-x-3">
             <button
@@ -108,22 +129,18 @@ const StoryView = () => {
               <FaEdit />
             </button>
             <button
-              onClick={() => setShowDeletePopup(true)} // Show delete confirmation
+              onClick={() => setShowDeletePopup(true)}
               className="text-red-500 hover:text-red-700 text-xl"
             >
               <FaTrashAlt />
             </button>
           </div>
         )}
-
-        {/* Header Section */}
         <div className="mb-6">
           <h1 className="text-3xl font-bold break-words max-w-full">
             {story.title}
           </h1>
         </div>
-
-        {/* Story Author & Date Section */}
         <div className="flex items-center gap-4 mb-6">
           <div className="w-12 h-12 bg-gray-400 rounded-full"></div>
           <div>
@@ -142,8 +159,6 @@ const StoryView = () => {
             </p>
           </div>
         </div>
-
-        {/* Story Image */}
         {story.imageUrl && (
           <img
             src={story.imageUrl}
@@ -151,13 +166,23 @@ const StoryView = () => {
             className="w-full rounded-lg mb-6 shadow-md"
           />
         )}
+        <div className="prose max-w-none flex-grow mb-6">
+          {/* <MarkdownRenderer markdownContent={story.description} content={""} /> */}
 
-        {/* Story Content */}
-        <div className="prose max-w-none">
-          <MarkdownRenderer markdownContent={story.description} content={""} />
+
+          <ReactMarkdownEditor
+          value={story.description}
+          
+          renderHTML={renderMarkdown}
+          view={{
+            menu: false,
+            md: false,
+            html: true,
+            
+          }}
+          style={{ height: "400px" }} // Editor height adjusted
+        />
         </div>
-
-        {/* Delete Confirmation Popup */}
         {showDeletePopup && (
           <DeletePopup
             message="Are you sure you want to delete this story?"
@@ -165,12 +190,10 @@ const StoryView = () => {
             onConfirm={handleDeleteConfirm}
           />
         )}
-
-        {/* Success Popup */}
         {showSuccessPopup && (
           <SuccessPopup
             message="Your story has been deleted successfully!"
-            onClose={() => navigate(`/profile/${user?.username}`)} // Redirect to user's profile after success
+            onClose={() => navigate(`/profile/${user?.username}`)}
           />
         )}
       </div>

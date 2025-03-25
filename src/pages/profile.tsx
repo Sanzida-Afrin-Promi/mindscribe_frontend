@@ -1,6 +1,7 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import ChangePassword from "../components/ChangePassword"; // Import the ChangePassword component
+import ChangePassword from "../components/ChangePassword"; 
 import ProfileCard from "../components/ProfileCard";
 import ProfileUpdate from "../components/ProfileUpdate";
 import StoryCard from "../components/StoryCard";
@@ -27,8 +28,8 @@ const Profile = () => {
   const [profile, setProfile] = useState<ProfileData | null>(null);
   const [stories, setStories] = useState<Story[]>([]);
   const [error, setError] = useState<string>("");
-  const [showUpdate, setShowUpdate] = useState<boolean>(false); // Added state for showing update modal
-  const [showChangePassword, setShowChangePassword] = useState<boolean>(false); // State for showing the change password modal
+  const [showUpdate, setShowUpdate] = useState<boolean>(false); 
+  const [showChangePassword, setShowChangePassword] = useState<boolean>(false); 
 
   const navigate = useNavigate();
   const { user } = useAuth();
@@ -40,24 +41,30 @@ const Profile = () => {
   useEffect(() => {
     const targetUsername = username || user?.username || "";
 
-    console.log(user);
-
     const fetchProfileData = async () => {
       try {
         const token = localStorage.getItem("token");
         if (!token) throw new Error("No token found.");
 
+        // Fetch profile data
         const profileResponse = await fetch(
           `http://localhost:3000/api/user/username/${targetUsername}`,
           {
             headers: { Authorization: `Bearer ${token}` },
           }
         );
+        if (profileResponse.status === 404) {
+          setProfile(null); 
+          setStories([]); 
+          navigate("/not-found");
+          return;
+        }
 
         if (!profileResponse.ok) throw new Error("Failed to fetch profile.");
         const profileData = await profileResponse.json();
         setProfile(profileData);
 
+        // Fetch stories data
         const storiesResponse = await fetch(
           `http://localhost:3000/api/story/author/${targetUsername}`,
           {
@@ -65,7 +72,11 @@ const Profile = () => {
           }
         );
 
-        if (storiesResponse.status === 404) return;
+        if (storiesResponse.status === 404) {
+          setStories([]); 
+          //navigate("/not-found");
+          return;
+        }
         if (!storiesResponse.ok) throw new Error("Failed to fetch stories.");
         const storiesData = await storiesResponse.json();
         setStories(storiesData);
@@ -79,15 +90,14 @@ const Profile = () => {
     };
 
     fetchProfileData();
-  }, [username, user, navigate]);
-
+  }, [username, user]); 
   const handleProfileUpdate = (updatedProfile: ProfileData) => {
-    setProfile(updatedProfile); // Update the profile state with the updated profile data
-    setShowUpdate(false); // Close the update modal after updating the profile
+    setProfile(updatedProfile); 
+    setShowUpdate(false); 
   };
 
   const handleChangePassword = () => {
-    setShowChangePassword(true); // Show the change password modal
+    setShowChangePassword(true); 
   };
 
   return (
@@ -98,8 +108,8 @@ const Profile = () => {
           profile={profile}
           isOwnProfile={isOwnProfile}
           isAdmin={isAdmin}
-          onUpdate={() => setShowUpdate(true)} // Trigger the update modal here
-          onChangePassword={handleChangePassword} // Pass the handler for change password
+          onUpdate={() => setShowUpdate(true)} 
+          onChangePassword={handleChangePassword} 
         />
 
         {/* Stories Section */}

@@ -2,18 +2,18 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import SuccessPopup from "./SuccessPopUp"; // Import the SuccessPopup component
-import ConfirmationPopup from "./ConfirmationPopUp"; // Import the ConfirmationPopup component
+import SuccessPopup from "./SuccessPopUp";
+import ConfirmationPopup from "./ConfirmationPopUp"; 
 
 const ProfileUpdate: React.FC<{ profile: any; onClose: (updatedProfile: any) => void }> = ({ profile, onClose }) => {
   const [name, setName] = useState(profile?.name || "");
   const [email, setEmail] = useState(profile?.email || "");
   const [showConfirmationPopup, setShowConfirmationPopup] = useState(false);
   const [showSuccessPopup, setShowSuccessPopup] = useState(false);
-  const [isBlurred, setIsBlurred] = useState(false); // For blurring the update form
+  const [isBlurred, setIsBlurred] = useState(false); 
 
   const handleUpdate = () => {
-    setShowConfirmationPopup(true); // Show confirmation popup when update is triggered
+    setShowConfirmationPopup(true); 
   };
 
   const confirmUpdate = async () => {
@@ -33,13 +33,13 @@ const ProfileUpdate: React.FC<{ profile: any; onClose: (updatedProfile: any) => 
       if (!response.ok) throw new Error("Failed to update profile.");
 
       const updatedProfile = await response.json();
-      setIsBlurred(true); // Blur the update form when the update starts
-      setShowConfirmationPopup(false); // Hide the confirmation popup
-      setShowSuccessPopup(true); // Show the success popup
+      setIsBlurred(true); 
+      setShowConfirmationPopup(false); 
+      setShowSuccessPopup(true); 
 
       setTimeout(() => {
-        setShowSuccessPopup(false); // Hide success popup after some time
-        onClose(updatedProfile); // Send the updated profile back to the parent
+        setShowSuccessPopup(false); 
+        onClose(updatedProfile); 
       }, 2000);
     } catch (err) {
       alert(err);
@@ -47,14 +47,14 @@ const ProfileUpdate: React.FC<{ profile: any; onClose: (updatedProfile: any) => 
   };
 
   const cancelUpdate = () => {
-    setShowConfirmationPopup(false); // Close the confirmation popup if canceled
+    setShowConfirmationPopup(false); 
   };
 
   return (
     <div className="p-6 bg-white shadow-lg rounded-lg relative">
       <h2 className="text-xl font-semibold mb-4">Update Profile</h2>
       
-      {/* Profile Update Form */}
+
       <div className={`space-y-4 ${isBlurred ? 'blur-sm' : ''}`}>
         <div>
           <label className="block text-sm font-medium">Name</label>
@@ -80,7 +80,7 @@ const ProfileUpdate: React.FC<{ profile: any; onClose: (updatedProfile: any) => 
         </div>
       </div>
 
-      {/* Confirmation Popup */}
+     
       {showConfirmationPopup && (
         <ConfirmationPopup
           message="Are you sure you want to update your profile?"
@@ -89,7 +89,7 @@ const ProfileUpdate: React.FC<{ profile: any; onClose: (updatedProfile: any) => 
         />
       )}
 
-      {/* Success Popup */}
+    
       {showSuccessPopup && (
         <SuccessPopup
           message="Your profile has been updated successfully!"

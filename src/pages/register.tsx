@@ -20,22 +20,22 @@ const Register: React.FC = () => {
       });
 
       if (response.ok) {
-        setMessage("User created successfully!"); // ✅ Show success message
+        setMessage("User created successfully!"); 
         setTimeout(() => {
-          navigate("/signIn"); // ✅ Redirect to sign-in page after 2 sec
+          navigate("/signIn"); 
         }, 200);
 
-        // ✅ Clear input fields after successful registration
+       
         setUsername("");
         setName("");
         setEmail("");
         setPassword("");
       } else {
-        setMessage("Registration failed. Try again."); // ❌ Handle failure
+        setMessage("Registration failed. Try again."); 
       }
     } catch (error) {
       console.error("Error during registration:", error);
-      setMessage("An error occurred. Please try again."); // ❌ Show error message
+      setMessage("An error occurred. Please try again."); 
     }
   };
 

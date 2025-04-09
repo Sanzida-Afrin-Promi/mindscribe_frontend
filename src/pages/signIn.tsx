@@ -1,13 +1,12 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { useAuth } from "../context/authContext"; // Make sure to import the hook
-
+import { useAuth } from "../context/authContext"; 
 const SignIn: React.FC = () => {
   const [identifier, setIdentifier] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
-  const { login } = useAuth(); // Access the login function from the context
+  const { login } = useAuth(); 
   const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -23,7 +22,7 @@ const SignIn: React.FC = () => {
       const data = await response.json();
 
       if (response.ok && data.token) {
-        // Call the login function from context instead of directly setting the token
+      
         login(data.token);
       } else {
         setError(data.message || "Invalid login credentials.");

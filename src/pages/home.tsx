@@ -1,14 +1,14 @@
 import React, { useEffect, useState } from "react";
-import StoryCard from "../components/StoryCard"; // Import the StoryCard component
+import StoryCard from "../components/StoryCard"; 
 
 const Home: React.FC = () => {
   const [stories, setStories] = useState<{ id: number; title: string; author_username: string; date: string; description: string }[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
-  const [totalStories, setTotalStories] = useState(0); // Track total stories
+  const [totalStories, setTotalStories] = useState(0); 
   const storiesPerPage = 9;
   const [loading, setLoading] = useState(false);
 
-  // Fetch paginated stories
+ 
   const fetchStories = async (page: number) => {
     setLoading(true);
     try {
@@ -27,8 +27,8 @@ const Home: React.FC = () => {
       }
 
       const data = await response.json();
-      setStories(data.stories); // Correct API response handling
-      setTotalStories(data.totalStories); // Set total count
+      setStories(data.stories); 
+      setTotalStories(data.totalStories); 
 
     } catch (error) {
       console.error("Error fetching stories:", error);
@@ -37,12 +37,12 @@ const Home: React.FC = () => {
     }
   };
 
-  // Fetch stories on page change
+ 
   useEffect(() => {
     fetchStories(currentPage);
   }, [currentPage]);
 
-  // Calculate total pages
+
   const totalPages = Math.ceil(totalStories / storiesPerPage);
 
   return (
@@ -56,7 +56,7 @@ const Home: React.FC = () => {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {stories.length > 0 ? (
               stories.map((story) => (
-                <StoryCard key={story.id} story={story} /> // Using StoryCard component
+                <StoryCard key={story.id} story={story} /> 
               ))
             ) : (
               <p className="text-gray-500">No stories available</p>
@@ -64,7 +64,7 @@ const Home: React.FC = () => {
           </div>
         )}
 
-        {/* Pagination Controls */}
+      
         {totalPages > 1 && (
           <div className="flex justify-center items-center mt-6 space-x-4">
             <button

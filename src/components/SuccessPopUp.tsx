@@ -9,8 +9,8 @@ interface SuccessPopupProps {
 
 const SuccessPopup: React.FC<SuccessPopupProps> = ({ message, onClose }) => {
   useEffect(() => {
-    const timer = setTimeout(onClose, 4500); // Auto-close after 4.5 seconds
-    return () => clearTimeout(timer); // Cleanup on unmount
+    const timer = setTimeout(onClose, 4500);
+    return () => clearTimeout(timer); 
   }, [onClose]);
 
   return (

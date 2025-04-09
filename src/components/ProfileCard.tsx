@@ -1,7 +1,8 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import ChangePassword from "../components/ChangePassword"; // Import the ChangePassword component
+// filepath: c:\Users\cefalo\Documents\GitHub\mindscribe_frontend\src\components\ProfileCard.tsx
+import { Role } from "../constants/enum";
 
 interface ProfileData {
   name: string;
@@ -23,18 +24,18 @@ const ProfileCard: React.FC<{
   isOwnProfile,
   isAdmin,
   onUpdate,
-  onChangePassword, // New prop for triggering the password change modal
+  onChangePassword, 
 }) => {
   const navigate = useNavigate();
 
   return (
     <div className="w-1/3 bg-white p-6 rounded-lg shadow-lg flex flex-col items-center">
-      {/* Profile Picture Placeholder */}
+      
       <div className="w-32 h-32 bg-gray-300 rounded-full flex items-center justify-center text-white text-3xl font-bold">
         <span>{profile?.name ? profile.name[0] : "P"}</span>
       </div>
 
-      {/* Profile Details */}
+     
       {profile ? (
         <div className="mt-6 w-full">
           <table className="w-full text-left border-collapse">
@@ -53,7 +54,7 @@ const ProfileCard: React.FC<{
               </tr>
               <tr className="border-b">
                 <td className="p-2 font-semibold">Role:</td>
-                <td className="p-2">{profile.role === 1 ? "Admin" : "User"}</td>
+                <td className="p-2">{profile.role === Role.Admin ? "Admin" : "User"}</td>
               </tr>
               <tr>
                 <td className="p-2 font-semibold">Joined:</td>
@@ -62,7 +63,7 @@ const ProfileCard: React.FC<{
             </tbody>
           </table>
 
-          {/* Show options only if it's the logged-in user's profile */}
+         
           {(isAdmin || isOwnProfile) && (
             <div className="mt-4 flex flex-col space-y-2">
               <button

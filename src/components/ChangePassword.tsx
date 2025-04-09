@@ -16,7 +16,7 @@ const ChangePassword = ({
   const [showConfirmationPopup, setShowConfirmationPopup] = useState(false);
   const [showSuccessPopup, setShowSuccessPopup] = useState(false);
   const [error, setError] = useState("");
-  
+
   const handleChangePassword = () => {
     if (newPassword !== confirmPassword) {
       setError("New password and confirm password do not match.");
@@ -30,14 +30,17 @@ const ChangePassword = ({
       const token = localStorage.getItem("token");
       if (!token) throw new Error("No token found.");
 
-      const response = await fetch(`http://localhost:3000/api/auth/user/password/change/${userId}`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({ currentPassword, newPassword, userId }),
-      });
+      const response = await fetch(
+        `http://localhost:3000/api/auth/user/password/change/${userId}`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({ currentPassword, newPassword, userId }),
+        }
+      );
 
       if (!response.ok) {
         const responseBody = await response.json();
@@ -59,7 +62,7 @@ const ChangePassword = ({
     <div className="p-6 bg-white shadow-lg rounded-lg relative">
       <h2 className="text-xl font-semibold mb-4">Change Password</h2>
       {error && <div className="text-red-500 mb-4">{error}</div>}
-      
+
       <div className="space-y-4">
         <div>
           <label className="block font-semibold">Current Password</label>
@@ -92,12 +95,21 @@ const ChangePassword = ({
         </div>
 
         <div className="flex justify-between">
-          <button onClick={onClose} className="bg-gray-500 text-white px-4 py-2 rounded">Cancel</button>
-          <button onClick={handleChangePassword} className="bg-blue-500 text-white px-4 py-2 rounded">Change Password</button>
+          <button
+            onClick={onClose}
+            className="bg-gray-500 text-white px-4 py-2 rounded"
+          >
+            Cancel
+          </button>
+          <button
+            onClick={handleChangePassword}
+            className="bg-blue-500 text-white px-4 py-2 rounded"
+          >
+            Change Password
+          </button>
         </div>
       </div>
 
-      {/* Confirmation Popup */}
       {showConfirmationPopup && (
         <ConfirmationPopup
           message="Are you sure you want to change your password?"
@@ -106,7 +118,6 @@ const ChangePassword = ({
         />
       )}
 
-      {/* Success Popup */}
       {showSuccessPopup && (
         <SuccessPopup
           message="Your password has been changed successfully!"

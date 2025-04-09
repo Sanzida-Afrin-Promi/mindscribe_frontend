@@ -37,18 +37,14 @@ const StoryView = () => {
           return;
         }
 
-        const response = await fetch(
-          `http://localhost:3000/api/story/${id}`,
-          {
-            method: "GET",
-            headers: {
-              Authorization: `Bearer ${token}`,
-              "Content-Type": "application/json",
-            },
-          }
-        );
+        const response = await fetch(`http://localhost:3000/api/story/${id}`, {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        });
         if (response.status === 404) {
-       
           navigate("/not-found");
           return;
         }
@@ -70,7 +66,7 @@ const StoryView = () => {
 
   const handleDeleteConfirm = async () => {
     if (!story || !token) return;
-    
+
     if (user?.username !== story?.author_username && Number(user?.role) !== 1) {
       setError("You are not authorized to edit this story.");
       navigate("/unauthorized");
@@ -111,16 +107,15 @@ const StoryView = () => {
 
   const mdParser = new MarkdownIt();
 
-
   const renderMarkdown = (text: string) => {
     return mdParser.render(text);
   };
 
-
   return (
     <div className="min-h-screen flex justify-center items-center bg-gray-100 py-8 overflow-hidden">
       <div className="bg-white shadow-lg rounded-lg p-6 w-full max-w-6xl h-[80vh] overflow-y-auto relative">
-        {(user?.username === story.author_username || Number(user?.role) === 1) && (
+        {(user?.username === story.author_username ||
+          Number(user?.role) === 1) && (
           <div className="absolute top-4 right-4 flex space-x-3">
             <button
               onClick={handleEdit}
@@ -167,21 +162,16 @@ const StoryView = () => {
           />
         )}
         <div className="prose max-w-none flex-grow mb-6">
-          {/* <MarkdownRenderer markdownContent={story.description} content={""} /> */}
-
-
           <ReactMarkdownEditor
-          value={story.description}
-          
-          renderHTML={renderMarkdown}
-          view={{
-            menu: false,
-            md: false,
-            html: true,
-            
-          }}
-          style={{ height: "400px" }} // Editor height adjusted
-        />
+            value={story.description}
+            renderHTML={renderMarkdown}
+            view={{
+              menu: false,
+              md: false,
+              html: true,
+            }}
+            style={{ height: "400px" }}
+          />
         </div>
         {showDeletePopup && (
           <DeletePopup

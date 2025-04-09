@@ -1,15 +1,14 @@
 import React from "react";
-import MarkdownIt from "markdown-it"; // Import MarkdownIt for parsing markdown
-
+import MarkdownIt from "markdown-it"; 
 interface MarkdownRendererProps {
   markdownContent: string;
   content : string;
 }
 
 const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ markdownContent }) => {
-  // Initialize MarkdownIt to parse the markdown content
+
   const mdParser = new MarkdownIt();
-  const parsedContent = mdParser.render(markdownContent); // Parse the markdown to HTML
+  const parsedContent = mdParser.render(markdownContent); 
 
   return (
     <div

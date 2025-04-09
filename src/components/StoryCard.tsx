@@ -42,7 +42,7 @@ const StoryCard: React.FC<{ story: Story }> = ({ story }) => {
   return (
     <div
       onClick={handleClick}
-      className="p-6 bg-gray-100 rounded-lg shadow-sm w-full max-w-2xl cursor-pointer" // Increased max width
+      className="p-6 bg-gray-100 rounded-lg shadow-sm w-full max-w-2xl cursor-pointer" 
     >
      
       <h3 className="text-xl font-semibold break-words mb-2 overflow-hidden text-ellipsis whitespace-nowrap">

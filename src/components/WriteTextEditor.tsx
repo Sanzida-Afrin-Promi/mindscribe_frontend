@@ -1,7 +1,7 @@
 import React from "react";
 import ReactMarkdownEditor from "react-markdown-editor-lite";
-import "react-markdown-editor-lite/lib/index.css"; // Import the styles for the editor
-import MarkdownIt from "markdown-it"; // Import markdown-it for parsing
+import "react-markdown-editor-lite/lib/index.css"; 
+import MarkdownIt from "markdown-it"; 
 
 interface WriteTextEditorProps {
   value: string;
@@ -20,7 +20,7 @@ const WriteTextEditor: React.FC<WriteTextEditorProps> = ({ value, onChange }) =>
       <label htmlFor="description" className="block text-xl font-medium mb-2">
         Description
       </label>
-      <div className="h-[500px] overflow-y-auto"> {/* Increased height */}
+      <div className="h-[500px] overflow-y-auto">
         <ReactMarkdownEditor
           value={value}
           onChange={({ text }: { text: string }) => onChange(text)}
@@ -33,7 +33,7 @@ const WriteTextEditor: React.FC<WriteTextEditorProps> = ({ value, onChange }) =>
             fullScreen: false,
             hideMenu: false
           }}
-          style={{ height: "400px" }} // Editor height adjusted
+          style={{ height: "400px" }} 
         />
       </div>
     </div>

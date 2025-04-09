@@ -6,11 +6,16 @@ const Register: React.FC = () => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [message, setMessage] = useState(""); // ✅ State for success message
-  const navigate = useNavigate(); // ✅ Hook for redirection
+  const [message, setMessage] = useState(""); 
+  const navigate = useNavigate(); 
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (password.length < 6) {
+      setMessage("Password must be at least 6 characters long.");
+      return;
+    }
 
     try {
       const response = await fetch("http://localhost:3000/api/user", {
@@ -25,7 +30,6 @@ const Register: React.FC = () => {
           navigate("/signIn"); 
         }, 200);
 
-       
         setUsername("");
         setName("");
         setEmail("");
@@ -44,7 +48,7 @@ const Register: React.FC = () => {
       <div className="w-full max-w-md p-6 border border-gray-600 rounded-lg shadow-lg bg-gray-100">
         <h2 className="text-2xl font-semibold text-center">Sign Up</h2>
 
-        {message && <p className="text-center text-green-600">{message}</p>} {/* ✅ Show success or error message */}
+        {message && <p className="text-center text-green-600">{message}</p>} 
 
         <form className="mt-4" onSubmit={handleSubmit}>
           <div className="mb-4">
@@ -89,6 +93,11 @@ const Register: React.FC = () => {
               className="w-full px-3 py-2 text-black border border-gray-500 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-400"
               required
             />
+            {password && password.length < 6 && (
+              <p className="text-sm text-red-600 mt-1">
+                Password must be at least 6 characters long.
+              </p>
+            )}
           </div>
 
           <button

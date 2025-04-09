@@ -1,13 +1,20 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
+import {
+  FaChevronDown,
+  FaHome,
+  FaRegEdit,
+  FaSearch,
+  FaSignOutAlt,
+  FaUserCircle,
+} from "react-icons/fa";
 import { Link, useNavigate } from "react-router-dom";
-import { FaUserCircle, FaChevronDown, FaSignOutAlt, FaHome, FaRegEdit, FaSearch } from "react-icons/fa";
 import { useAuth } from "../context/authContext";
-import SearchPopup from "./SearchPopUp"; // Import the SearchPopup component
+import SearchPopup from "./SearchPopUp";
 
 const Navbar = () => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
-  const [isSearchPopupVisible, setIsSearchPopupVisible] = useState(false); // State to control SearchPopup visibility
-  const [searchQuery, setSearchQuery] = useState(""); // State for search query
+  const [isSearchPopupVisible, setIsSearchPopupVisible] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
   const navigate = useNavigate();
   const { user, logout } = useAuth();
 
@@ -26,10 +33,17 @@ const Navbar = () => {
     navigate("/signIn");
   };
 
-  // Close dropdown when clicking outside
+  const closeSearchPopup = () => {
+    setSearchQuery(""); 
+    setIsSearchPopupVisible(false); 
+  };
+
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (event.target && !(event.target as HTMLElement).closest(".dropdown-container")) {
+      if (
+        event.target &&
+        !(event.target as HTMLElement).closest(".dropdown-container")
+      ) {
         setDropdownOpen(false);
       }
     };
@@ -40,44 +54,51 @@ const Navbar = () => {
 
   return (
     <nav className="bg-gray-800 p-4 flex justify-between items-center text-white">
-      {/* Left: Logo */}
       <Link to="/home" className="text-2xl font-bold hover:text-gray-300">
         Mind Scribe
       </Link>
 
-      {/* Middle: Search Bar */}
-      <div className="flex items-center space-x-2">
+      <div className="relative">
         <input
           type="text"
           placeholder="Search..."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          className="px-4 py-2 rounded-md text-black focus:outline-none"
-          onClick={() => setIsSearchPopupVisible(true)} // Open SearchPopup when clicking the input
+          className="w-full px-10 py-2 rounded-md text-black focus:outline-none"
+          onClick={() => setIsSearchPopupVisible(true)}
         />
         <FaSearch
-          className="text-xl cursor-pointer hover:text-gray-300"
-          onClick={() => setIsSearchPopupVisible(true)} // Open SearchPopup when clicking the icon
+          className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 cursor-pointer"
+          onClick={() => setIsSearchPopupVisible(true)}
         />
       </div>
 
-      {/* Right: Navigation Links and Dropdown */}
       <div className="space-x-6 flex items-center">
-        <Link to="/home" className="flex items-center hover:text-gray-300" onClick={closeDropdown}>
+        <Link
+          to="/home"
+          className="flex items-center hover:text-gray-300"
+          onClick={closeDropdown}
+        >
           <FaHome className="text-2xl" />
         </Link>
 
-        <Link to="/story/create" className="flex items-center hover:text-gray-300" onClick={closeDropdown}>
+        <Link
+          to="/story/create"
+          className="flex items-center hover:text-gray-300"
+          onClick={closeDropdown}
+        >
           <FaRegEdit className="text-2xl mr-2" /> Write
         </Link>
 
         {user && (
-          <Link to={`/profile/${user.username}`} className="flex items-center hover:text-gray-300">
+          <Link
+            to={`/profile/${user.username}`}
+            className="flex items-center hover:text-gray-300"
+          >
             <FaUserCircle className="text-3xl" />
           </Link>
         )}
 
-        {/* Dropdown for Logout */}
         <div className="relative dropdown-container">
           <button
             onClick={(event) => toggleDropdown(event)}
@@ -99,10 +120,9 @@ const Navbar = () => {
         </div>
       </div>
 
-      {/* SearchPopup */}
       {isSearchPopupVisible && (
         <SearchPopup
-          closePopup={() => setIsSearchPopupVisible(false)} // Close SearchPopup
+          closePopup={closeSearchPopup} 
           searchQuery={searchQuery}
           setSearchQuery={setSearchQuery}
         />

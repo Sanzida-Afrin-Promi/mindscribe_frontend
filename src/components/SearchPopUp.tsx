@@ -3,11 +3,10 @@
 import { useEffect, useRef, useState } from "react";
 import { Navigate, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/authContext";
-import ReactMarkdown from "react-markdown"; // Import react-markdown
+import ReactMarkdown from "react-markdown";
 
-// Debounce hook
 const useDebounce = (value: string, delay: number) => {
-  const [debouncedValue, setDebouncedValue] = useState<string>(value);
+  const [debouncedValue, setDebouncedValue] = useState<string>("");
 
   useEffect(() => {
     const handler = setTimeout(() => {
@@ -32,7 +31,11 @@ const truncateText = (text: string, limit: number) => {
   return text.length > limit ? text.substring(0, limit) + "..." : text;
 };
 
-const SearchPopup = ({ closePopup, searchQuery, setSearchQuery }: SearchPopupProps) => {
+const SearchPopup = ({
+  closePopup,
+  searchQuery,
+  setSearchQuery,
+}: SearchPopupProps) => {
   const { user } = useAuth();
   const navigate = useNavigate();
   const token = localStorage.getItem("token");
@@ -49,7 +52,6 @@ const SearchPopup = ({ closePopup, searchQuery, setSearchQuery }: SearchPopupPro
 
   const inputRef = useRef<HTMLInputElement>(null);
 
-  // Handle input focus and overflow
   useEffect(() => {
     document.body.style.overflow = "hidden";
     if (inputRef.current) {
@@ -60,7 +62,6 @@ const SearchPopup = ({ closePopup, searchQuery, setSearchQuery }: SearchPopupPro
     };
   }, []);
 
-  // Debounced search query
   const debouncedSearchQuery = useDebounce(searchQuery, 500);
 
   useEffect(() => {
@@ -82,8 +83,7 @@ const SearchPopup = ({ closePopup, searchQuery, setSearchQuery }: SearchPopupPro
         );
         const data = await response.json();
 
-        console.log("API Response Data:", data); // ✅ Debug log
-
+        console.log("API Response Data:", data);
         setSearchResults(data);
       } catch (error) {
         console.error("Error fetching search results:", error);
@@ -97,7 +97,7 @@ const SearchPopup = ({ closePopup, searchQuery, setSearchQuery }: SearchPopupPro
   const storyTitles = searchResults?.storyTitles || [];
   const storyDescriptions = searchResults?.storyDescriptions || [];
 
-  console.log("Extracted Story Descriptions:", storyDescriptions); // ✅ Debug log
+  console.log("Extracted Story Descriptions:", storyDescriptions);
 
   return (
     <div
@@ -149,9 +149,13 @@ const SearchPopup = ({ closePopup, searchQuery, setSearchQuery }: SearchPopupPro
                     navigate(`/story/${story.id}`, { state: story });
                   }}
                 >
-                  <p className="text-md font-semibold">{truncateText(story.title, 30)}</p>
+                  <p className="text-md font-semibold">
+                    {truncateText(story.title, 30)}
+                  </p>
                   <div className="mt-1 overflow-hidden text-xs text-gray-500 line-clamp-1 dark:text-gray-300">
-                    <ReactMarkdown>{truncateText(story.description, 70)}</ReactMarkdown>
+                    <ReactMarkdown>
+                      {truncateText(story.description, 70)}
+                    </ReactMarkdown>
                   </div>
                 </div>
               ))
@@ -161,10 +165,12 @@ const SearchPopup = ({ closePopup, searchQuery, setSearchQuery }: SearchPopupPro
           </div>
           <hr className="my-4 border-slate-400" />
           <div>
-            <h3 className="mb-1 font-bold text-gray-500">Story by Descriptions</h3>
+            <h3 className="mb-1 font-bold text-gray-500">
+              Story by Descriptions
+            </h3>
             {storyDescriptions.length > 0 ? (
               storyDescriptions.map((story: any, index: number) => {
-                console.log("Story Object:", story); // ✅ Debug log inside map
+                console.log("Story Object:", story);
 
                 return (
                   <div
@@ -175,15 +181,21 @@ const SearchPopup = ({ closePopup, searchQuery, setSearchQuery }: SearchPopupPro
                       navigate(`/story/${story.id}`, { state: story });
                     }}
                   >
-                    <p className="text-md font-semibold">{truncateText(story.title, 30)}</p>
+                    <p className="text-md font-semibold">
+                      {truncateText(story.title, 30)}
+                    </p>
                     <div className="mt-1 overflow-hidden text-xs text-gray-500 line-clamp-1 dark:text-gray-300">
-                      <ReactMarkdown>{story.description || "No description available."}</ReactMarkdown>
+                      <ReactMarkdown>
+                        {story.description || "No description available."}
+                      </ReactMarkdown>
                     </div>
                   </div>
                 );
               })
             ) : (
-              <p className="mt-2 text-sm text-gray-500 ">No descriptions found</p>
+              <p className="mt-2 text-sm text-gray-500 ">
+                No descriptions found
+              </p>
             )}
           </div>
         </div>

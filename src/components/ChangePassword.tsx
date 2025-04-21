@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
+
 import React, { useState } from "react";
 import SuccessPopup from "./SuccessPopUp";
 import ConfirmationPopup from "./ConfirmationPopUp";
@@ -53,8 +53,12 @@ const ChangePassword = ({
         setShowSuccessPopup(false);
         onClose();
       }, 2000);
-    } catch (err: any) {
-      setError(err.message || "Something went wrong.");
+    } catch (err) {
+      if (err instanceof Error) {
+        setError(err.message || "Something went wrong.");
+      } else {
+        setError("Something went wrong.");
+      }
     }
   };
 

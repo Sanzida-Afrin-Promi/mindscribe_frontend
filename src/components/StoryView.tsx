@@ -1,121 +1,41 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-import { useEffect, useState } from "react";
-import { FaEdit, FaTrashAlt } from "react-icons/fa";
-import { Link, useNavigate, useParams } from "react-router-dom";
-import MarkdownRenderer from "../components/MarkDownRenderer";
-import SuccessPopup from "../components/SuccessPopUp";
-import { useAuth } from "../context/authContext";
-import DeletePopup from "./ConfirmationPopUp";
+// StoryView.tsx
 import MarkdownIt from "markdown-it";
+import { FaEdit, FaTrashAlt } from "react-icons/fa";
 import ReactMarkdownEditor from "react-markdown-editor-lite";
 import "react-markdown-editor-lite/lib/index.css";
+import { Link } from "react-router-dom";
+import SuccessPopup from "../components/SuccessPopUp";
+import DeletePopup from "./ConfirmationPopUp";
+import { useStoryViewLogic } from "../hooks/useStoryViewLogic";
+import { Role } from "../constants/enum";
 
-interface Story {
-  id: string;
-  title: string;
-  author_username: string;
-  imageUrl: string;
-  description: string;
-  date: string;
-}
 
 const StoryView = () => {
-  const { id } = useParams<{ id: string }>();
-  const [story, setStory] = useState<Story | null>(null);
-  const [error, setError] = useState<string>("");
-  const [showDeletePopup, setShowDeletePopup] = useState(false);
-  const [showSuccessPopup, setShowSuccessPopup] = useState(false);
-  const navigate = useNavigate();
-  const { user } = useAuth();
-  const token = localStorage.getItem("token");
-
-  useEffect(() => {
-    const fetchStory = async () => {
-      try {
-        if (!token) {
-          setError("Unauthorized access. Please log in.");
-          return;
-        }
-
-        const response = await fetch(`http://localhost:3000/api/story/${id}`, {
-          method: "GET",
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        });
-        if (response.status === 404) {
-          navigate("/not-found");
-          return;
-        }
-
-        if (!response.ok) throw new Error("Failed to fetch story.");
-        const data = await response.json();
-        setStory(data);
-      } catch (err) {
-        setError(
-          err instanceof Error ? err.message : "An unknown error occurred."
-        );
-      }
-    };
-
-    fetchStory();
-  }, [id, token]);
-
-  const handleEdit = () => story && navigate(`/story/edit/${story.id}`);
-
-  const handleDeleteConfirm = async () => {
-    if (!story || !token) return;
-
-    if (user?.username !== story?.author_username && Number(user?.role) !== 1) {
-      setError("You are not authorized to edit this story.");
-      navigate("/unauthorized");
-      return;
-    }
-
-    try {
-      const response = await fetch(
-        `http://localhost:3000/api/story/${story.id}`,
-        {
-          method: "DELETE",
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        }
-      );
-
-      if (!response.ok) throw new Error("Failed to delete story.");
-
-      setShowDeletePopup(false);
-      setShowSuccessPopup(true);
-      setTimeout(() => {
-        navigate(`/profile/${user?.username}`);
-      }, 2500);
-    } catch (err) {
-      alert("Error deleting story. Please try again.");
-    }
-  };
-
-  const handleDeleteCancel = () => {
-    setShowDeletePopup(false);
-    navigate(`/story/${story?.id}`);
-  };
-
-  if (error) return <p className="text-red-500">{error}</p>;
-  if (!story) return <p className="text-gray-500">Loading story...</p>;
+  const {
+    story,
+    error,
+    showDeletePopup,
+    showSuccessPopup,
+    setShowDeletePopup,
+    setShowSuccessPopup,
+    handleEdit,
+    handleDeleteConfirm,
+    handleDeleteCancel,
+    user,
+  } = useStoryViewLogic();
 
   const mdParser = new MarkdownIt();
 
-  const renderMarkdown = (text: string) => {
-    return mdParser.render(text);
-  };
+  const renderMarkdown = (text: string) => mdParser.render(text);
+
+  if (error) return <p className="text-red-500">{error}</p>;
+  if (!story) return <p className="text-gray-500">Loading story...</p>;
 
   return (
     <div className="min-h-screen flex justify-center items-center bg-gray-100 py-8 overflow-hidden">
       <div className="bg-white shadow-lg rounded-lg p-6 w-full max-w-6xl h-[80vh] overflow-y-auto relative">
         {(user?.username === story.author_username ||
-          Number(user?.role) === 1) && (
+          Number(user?.role) === Role.Admin) && (
           <div className="absolute top-4 right-4 flex space-x-3">
             <button
               onClick={handleEdit}
@@ -165,11 +85,7 @@ const StoryView = () => {
           <ReactMarkdownEditor
             value={story.description}
             renderHTML={renderMarkdown}
-            view={{
-              menu: false,
-              md: false,
-              html: true,
-            }}
+            view={{ menu: false, md: false, html: true }}
             style={{ height: "400px" }}
           />
         </div>
@@ -183,7 +99,7 @@ const StoryView = () => {
         {showSuccessPopup && (
           <SuccessPopup
             message="Your story has been deleted successfully!"
-            onClose={() => navigate(`/profile/${user?.username}`)}
+            onClose={() => setShowSuccessPopup(false)}
           />
         )}
       </div>

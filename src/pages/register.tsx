@@ -1,13 +1,15 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const Register: React.FC = () => {
   const [username, setUsername] = useState("");
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [message, setMessage] = useState(""); 
-  const navigate = useNavigate(); 
+  const [message, setMessage] = useState("");
+  const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -18,37 +20,63 @@ const Register: React.FC = () => {
     }
 
     try {
-      const response = await fetch("http://localhost:3000/api/user", {
+      const response = await fetch("http://localhost:3000/api/users", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ username, name, email, password }),
       });
 
       if (response.ok) {
-        setMessage("User created successfully!"); 
+        toast.success("User created successfully!"); 
         setTimeout(() => {
-          navigate("/signIn"); 
-        }, 200);
+          navigate("/signIn");
+        }, 800);
 
         setUsername("");
         setName("");
         setEmail("");
         setPassword("");
-      } else {
-        setMessage("Registration failed. Try again."); 
+        return;
       }
+
+     // if (response.status === 409) {
+        const errorData = await response.json();
+        const errorMessage = errorData.errors?.[0];
+
+        if (errorMessage === "Username already exists") {
+          setMessage("Username already exists. Please choose another.");
+        } else if (errorMessage === "Email already exists") {
+          setMessage("Email already exists. Please use another.");
+        } else {
+          setMessage(errorMessage || "Registration failed. Try again.");  
+        }
+        return;
+      
+
+      setMessage("Registration failed. Try again.");
     } catch (error) {
       console.error("Error during registration:", error);
-      setMessage("An error occurred. Please try again."); 
+      setMessage("An error occurred. Please try again.");
     }
   };
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-white text-black">
+      <ToastContainer /> 
       <div className="w-full max-w-md p-6 border border-gray-600 rounded-lg shadow-lg bg-gray-100">
         <h2 className="text-2xl font-semibold text-center">Sign Up</h2>
 
-        {message && <p className="text-center text-green-600">{message}</p>} 
+        {message && (
+          <p
+            className={`text-center ${
+              message.includes("successfully")
+                ? "text-green-600"
+                : "text-red-600"
+            }`}
+          >
+            {message}
+          </p>
+        )}
 
         <form className="mt-4" onSubmit={handleSubmit}>
           <div className="mb-4">
@@ -63,7 +91,9 @@ const Register: React.FC = () => {
           </div>
 
           <div className="mb-4">
-            <label className="block text-gray-700 text-sm mb-1">Full Name</label>
+            <label className="block text-gray-700 text-sm mb-1">
+              Full Name
+            </label>
             <input
               type="text"
               value={name}

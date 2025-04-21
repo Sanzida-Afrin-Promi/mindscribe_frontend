@@ -1,25 +1,6 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable react-hooks/rules-of-hooks */
-import { useEffect, useRef, useState } from "react";
-import { Navigate, useNavigate } from "react-router-dom";
-import { useAuth } from "../context/authContext";
 import ReactMarkdown from "react-markdown";
-
-const useDebounce = (value: string, delay: number) => {
-  const [debouncedValue, setDebouncedValue] = useState<string>("");
-
-  useEffect(() => {
-    const handler = setTimeout(() => {
-      setDebouncedValue(value);
-    }, delay);
-
-    return () => {
-      clearTimeout(handler);
-    };
-  }, [value, delay]);
-
-  return debouncedValue;
-};
+import { Navigate } from "react-router-dom";
+import { useSearchPopup } from "../hooks/useSearchPopup";
 
 interface SearchPopupProps {
   closePopup: () => void;
@@ -36,68 +17,19 @@ const SearchPopup = ({
   searchQuery,
   setSearchQuery,
 }: SearchPopupProps) => {
-  const { user } = useAuth();
-  const navigate = useNavigate();
-  const token = localStorage.getItem("token");
+  const { user, navigate, inputRef, searchResults } = useSearchPopup(
+    searchQuery,
+    setSearchQuery,
+    closePopup
+  );
 
   if (!user) {
     return <Navigate to="/signIn" />;
   }
 
-  const [searchResults, setSearchResults] = useState<any>({
-    users: [],
-    storyTitles: [],
-    storyDescriptions: [],
-  });
-
-  const inputRef = useRef<HTMLInputElement>(null);
-
-  useEffect(() => {
-    document.body.style.overflow = "hidden";
-    if (inputRef.current) {
-      inputRef.current.focus();
-    }
-    return () => {
-      document.body.style.overflow = "";
-    };
-  }, []);
-
-  const debouncedSearchQuery = useDebounce(searchQuery, 500);
-
-  useEffect(() => {
-    const fetchSearchResults = async () => {
-      if (!debouncedSearchQuery) {
-        setSearchResults({ users: [], storyTitles: [], storyDescriptions: [] });
-        return;
-      }
-      try {
-        const response = await fetch(
-          `http://localhost:3000/api/search?pattern=${debouncedSearchQuery}`,
-          {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-        const data = await response.json();
-
-        console.log("API Response Data:", data);
-        setSearchResults(data);
-      } catch (error) {
-        console.error("Error fetching search results:", error);
-      }
-    };
-
-    fetchSearchResults();
-  }, [debouncedSearchQuery, token]);
-
   const users = searchResults?.users || [];
   const storyTitles = searchResults?.storyTitles || [];
   const storyDescriptions = searchResults?.storyDescriptions || [];
-
-  console.log("Extracted Story Descriptions:", storyDescriptions);
 
   return (
     <div
@@ -120,7 +52,7 @@ const SearchPopup = ({
           <div>
             <h3 className="mb-1 font-bold text-gray-500">Users</h3>
             {users.length > 0 ? (
-              users.map((user: any, index: number) => (
+              users.map((user, index) => (
                 <div
                   key={index}
                   className="p-3 mb-2 font-medium text-blue-600 transition duration-200 bg-white rounded-lg shadow-md cursor-pointer dark:bg-gray-700 hover:shadow-lg"
@@ -140,13 +72,13 @@ const SearchPopup = ({
           <div>
             <h3 className="mb-1 font-bold text-gray-500">Story by Titles</h3>
             {storyTitles.length > 0 ? (
-              storyTitles.map((story: any, index: number) => (
+              storyTitles.map((story, index) => (
                 <div
                   key={index}
                   className="p-3 mb-2 font-medium text-blue-600 transition duration-200 bg-white rounded-lg shadow-md cursor-pointer dark:bg-gray-700 hover:shadow-lg"
                   onClick={() => {
                     closePopup();
-                    navigate(`/story/${story.id}`, { state: story });
+                    navigate(`/stories/${story.id}`, { state: story });
                   }}
                 >
                   <p className="text-md font-semibold">
@@ -169,16 +101,14 @@ const SearchPopup = ({
               Story by Descriptions
             </h3>
             {storyDescriptions.length > 0 ? (
-              storyDescriptions.map((story: any, index: number) => {
-                console.log("Story Object:", story);
-
+              storyDescriptions.map((story, index) => {
                 return (
                   <div
                     key={index}
                     className="p-3 mb-2 font-medium text-blue-600 transition duration-200 bg-white rounded-lg shadow-md cursor-pointer dark:bg-gray-700 hover:shadow-lg"
                     onClick={() => {
                       closePopup();
-                      navigate(`/story/${story.id}`, { state: story });
+                      navigate(`/stories/${story.id}`, { state: story });
                     }}
                   >
                     <p className="text-md font-semibold">

@@ -1,12 +1,12 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { useAuth } from "../context/authContext"; 
+import { useAuth } from "../context/authContext";
 const SignIn: React.FC = () => {
   const [identifier, setIdentifier] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
-  const { login } = useAuth(); 
+  const { login } = useAuth();
   const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -22,7 +22,6 @@ const SignIn: React.FC = () => {
       const data = await response.json();
 
       if (response.ok && data.token) {
-      
         login(data.token);
       } else {
         setError(data.message || "Invalid login credentials.");
@@ -74,7 +73,7 @@ const SignIn: React.FC = () => {
         </form>
 
         <p className="mt-4 text-center text-gray-600">
-          Don't have an account? {" "}
+          Don't have an account?{" "}
           <Link to="/register" className="text-gray-800 hover:underline">
             Sign Up
           </Link>

@@ -19,7 +19,7 @@ const StoryCard: React.FC<{ story: Story }> = ({ story }) => {
   const parsedDescription = mdParser.render(story.description);
 
   const handleClick = () => {
-    navigate(`/story/${story.id}`);
+    navigate(`/stories/${story.id}`);
   };
 
   const handleUsernameClick = (e: React.MouseEvent) => {

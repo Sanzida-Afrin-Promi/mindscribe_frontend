@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import WriteTextEditor from "../components/WriteTextEditor"; 
 import SuccessPopup from "../components/SuccessPopUp"; 
 
+
 const WriteStory = () => {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
@@ -40,7 +41,7 @@ const WriteStory = () => {
     }
 
     try {
-      const response = await fetch("http://localhost:3000/api/story", {
+      const response = await fetch("http://localhost:3000/api/stories", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -48,7 +49,7 @@ const WriteStory = () => {
         },
         body: JSON.stringify({ title, description }),
       });
-
+      
       if (!response.ok) {
         throw new Error("Failed to submit story. Please try again.");
       }
@@ -59,7 +60,7 @@ const WriteStory = () => {
 
      
       setTimeout(() => {
-        navigate(`/story/${data.id}`);
+        navigate(`/stories/${data.id}`);
       }, 2500);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Something went wrong.");

@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import React from "react";
 import { useNavigate } from "react-router-dom";
-// filepath: c:\Users\cefalo\Documents\GitHub\mindscribe_frontend\src\components\ProfileCard.tsx
+
 import { Role } from "../constants/enum";
 
 interface ProfileData {
